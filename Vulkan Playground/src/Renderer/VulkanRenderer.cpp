@@ -1,4 +1,5 @@
 #include "VulkanRenderer.h"
+#include "VulkanDevice.h"
 
 VulkanRenderer::VulkanRenderer(GLFWwindow* nativeWindow)
 {
@@ -9,11 +10,13 @@ void VulkanRenderer::Init()
 {
 	
 	createInstance();
+
+	m_PhysicalDevice = VulkanPhysicalDevice::Select();
 }
 
 void VulkanRenderer::Cleanup()
 {
-	vkDestroyInstance(m_VulkanInstance, nullptr);
+	vkDestroyInstance(s_VulkanInstance, nullptr);
 }
 
 void VulkanRenderer::createInstance()
@@ -64,7 +67,7 @@ void VulkanRenderer::createInstance()
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Instance Creation
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance));
+	VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &s_VulkanInstance));
 
 }
 
@@ -94,3 +97,5 @@ bool VulkanRenderer::checkInstanceExtensionSupport(std::vector<const char*>* ext
 	}
 	return true;
 }
+
+
