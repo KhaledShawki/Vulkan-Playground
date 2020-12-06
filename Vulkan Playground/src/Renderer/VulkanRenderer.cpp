@@ -1,5 +1,5 @@
 #include "VulkanRenderer.h"
-#include "VulkanDevice.h"
+
 
 VulkanRenderer::VulkanRenderer(GLFWwindow* nativeWindow)
 {
@@ -12,7 +12,11 @@ void VulkanRenderer::Init()
 	createInstance();
 
 	m_PhysicalDevice = VulkanPhysicalDevice::Select();
-}
+	VkPhysicalDeviceFeatures enabledFeatures{};
+
+	m_Device = std::make_shared<VulkanDevice>(m_PhysicalDevice, enabledFeatures);
+
+} 
 
 void VulkanRenderer::Cleanup()
 {

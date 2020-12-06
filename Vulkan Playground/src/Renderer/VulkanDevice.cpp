@@ -11,8 +11,6 @@ VulkanPhysicalDevice::VulkanPhysicalDevice()
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(vkInstance, &deviceCount, nullptr);
 
-	ASSERT(deviceCount <= 0, "Can't finde GPUs that support Vulkan Instance!");
-
 	std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
     VK_CHECK_RESULT(vkEnumeratePhysicalDevices(vkInstance, &deviceCount, physicalDevices.data()));
 
@@ -37,6 +35,7 @@ VulkanPhysicalDevice::VulkanPhysicalDevice()
 	ASSERT(selectedPhysicalDevice, "Could not find any physical devices!");
 	m_PhysicalDevice = selectedPhysicalDevice;
 
+
 	vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &m_Features);
 
 	uint32_t queueFamilyCount;
@@ -46,7 +45,48 @@ VulkanPhysicalDevice::VulkanPhysicalDevice()
 	vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice, &queueFamilyCount, m_QueueFamilyProperties.data());
 
 	int requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT;
+	const float defaultQueuePriority(0.0f);
 	m_QueueFamilyIndices = GetQueueFamilyIndices(requestedQueueTypes);
+	// Graphic queue
+	if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT)
+	{
+		VkDeviceQueueCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		createInfo.queueFamilyIndex = m_QueueFamilyIndices.Graphic;
+		createInfo.queueCount = 1;
+		createInfo.pQueuePriorities = &defaultQueuePriority;
+		m_QueueCreateInfos.push_back(createInfo);
+	}
+	
+	// Dedicated compute queue
+	if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT)
+	{
+		if (m_QueueFamilyIndices.Compute != m_QueueFamilyIndices.Graphic)
+		{
+			// If compute family index differs, we need an additional queue create info for the compute queue
+			VkDeviceQueueCreateInfo createInfo{};
+			createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			createInfo.queueFamilyIndex = m_QueueFamilyIndices.Compute;
+			createInfo.queueCount = 1;
+			createInfo.pQueuePriorities = &defaultQueuePriority;
+			m_QueueCreateInfos.push_back(createInfo);
+		}
+	}
+
+	// Dedicated transfer queue
+	if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT)
+	{
+		if (m_QueueFamilyIndices.Transfer != m_QueueFamilyIndices.Graphic && (m_QueueFamilyIndices.Transfer != m_QueueFamilyIndices.Compute))
+		{
+			// If transfer family index differs, we need an additional queue create info for the compute queue
+			VkDeviceQueueCreateInfo createInfo{};
+			createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			createInfo.queueFamilyIndex = m_QueueFamilyIndices.Transfer;
+			createInfo.queueCount = 1;
+			createInfo.pQueuePriorities = &defaultQueuePriority;
+			m_QueueCreateInfos.push_back(createInfo);
+		}
+	}
 
 }
 
@@ -123,4 +163,22 @@ VulkanPhysicalDevice::QueueFamilyIndices VulkanPhysicalDevice::GetQueueFamilyInd
 std::shared_ptr<VulkanPhysicalDevice> VulkanPhysicalDevice::Select()
 {
     return std::make_shared<VulkanPhysicalDevice>();
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Vulkan Logical Device
+////////////////////////////////////////////////////////////////////////////////////
+VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physicalDevice, VkPhysicalDeviceFeatures enabledFeatures)
+	:m_PhysicalDevice(physicalDevice), m_EnabledFeatures(enabledFeatures)
+{
+
+	VkDeviceCreateInfo deviceCreateInfo{};
+	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(m_PhysicalDevice->m_QueueCreateInfos.size());
+	deviceCreateInfo.pQueueCreateInfos = m_PhysicalDevice->m_QueueCreateInfos.data();
+	deviceCreateInfo.enabledExtensionCount = 0;
+	deviceCreateInfo.ppEnabledExtensionNames = nullptr;
+	deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
+
+	VK_CHECK_RESULT(vkCreateDevice(m_PhysicalDevice->GetVulkanPhysicalDevice(), &deviceCreateInfo, nullptr, &m_LogicalDevice));
 }

@@ -36,4 +36,18 @@ private:
 	std::unordered_set<std::string> m_SupportedExtensions;
 	std::vector<VkDeviceQueueCreateInfo> m_QueueCreateInfos;
 
+	friend class VulkanDevice;
+};
+
+class VulkanDevice
+{
+public:
+	VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physicalDevice, VkPhysicalDeviceFeatures enabledFeatures);
+	~VulkanDevice() = default;
+
+	VkDevice GetVulkanDevice() const { return m_LogicalDevice; }
+private:
+	VkDevice m_LogicalDevice = nullptr;
+	std::shared_ptr<VulkanPhysicalDevice> m_PhysicalDevice;
+	VkPhysicalDeviceFeatures m_EnabledFeatures;
 };
