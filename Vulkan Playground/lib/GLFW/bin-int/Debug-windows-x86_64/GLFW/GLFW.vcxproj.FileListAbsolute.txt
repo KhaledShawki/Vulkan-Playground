@@ -1,6 +1,2 @@
-C:\dev\VulkanTest\VulkanTest\lib\GLFW\bin\Debug-windows-x86_64\GLFW\GLFW.pdb
-C:\dev\VulkanTest\VulkanTest\lib\GLFW\bin-int\Debug-windows-x86_64\GLFW\GLFW.pdb
-C:\dev\Vulkan Playground\Vulkan Playground\lib\GLFW\bin\Debug-windows-x86_64\GLFW\GLFW.pdb
-C:\dev\Vulkan Playground\Vulkan Playground\lib\GLFW\bin-int\Debug-windows-x86_64\GLFW\GLFW.pdb
 C:\dev\Vulkan-Playground\Vulkan Playground\lib\GLFW\bin\Debug-windows-x86_64\GLFW\GLFW.pdb
 C:\dev\Vulkan-Playground\Vulkan Playground\lib\GLFW\bin-int\Debug-windows-x86_64\GLFW\GLFW.pdb
