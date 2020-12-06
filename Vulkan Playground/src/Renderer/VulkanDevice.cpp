@@ -11,6 +11,8 @@ VulkanPhysicalDevice::VulkanPhysicalDevice()
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(vkInstance, &deviceCount, nullptr);
 
+	ASSERT(deviceCount > 0, "Can't finde GPUs that support Vulkan Instance!");
+
 	std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
     VK_CHECK_RESULT(vkEnumeratePhysicalDevices(vkInstance, &deviceCount, physicalDevices.data()));
 
@@ -165,6 +167,12 @@ std::shared_ptr<VulkanPhysicalDevice> VulkanPhysicalDevice::Select()
     return std::make_shared<VulkanPhysicalDevice>();
 }
 
+bool VulkanPhysicalDevice::IsExtensionSupported(const std::string& extensionName) const
+{
+	return m_SupportedExtensions.find(extensionName) != m_SupportedExtensions.end();
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Vulkan Logical Device
 ////////////////////////////////////////////////////////////////////////////////////
@@ -181,4 +189,13 @@ VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physical
 	deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
 
 	VK_CHECK_RESULT(vkCreateDevice(m_PhysicalDevice->GetVulkanPhysicalDevice(), &deviceCreateInfo, nullptr, &m_LogicalDevice));
+
+	// Get a graphics queue from the device
+	vkGetDeviceQueue(m_LogicalDevice, m_PhysicalDevice->m_QueueFamilyIndices.Graphic, 0, &m_Queue);
+}
+
+
+void VulkanDevice::Cleanup()
+{
+	vkDestroyDevice(m_LogicalDevice, nullptr);
 }

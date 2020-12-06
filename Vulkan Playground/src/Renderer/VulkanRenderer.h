@@ -24,13 +24,17 @@ private:
 	
 	// Vulkan instance
 	inline static VkInstance s_VulkanInstance;
-	void createInstance();
-	bool checkInstanceExtensionSupport(std::vector<const char*>* extensionsToCheck);
+	void CreateInstance();
+	bool CheckInstanceExtensionSupport(std::vector<const char*>* extensionsToCheck);
 
 
 	// Devices
 	std::shared_ptr<VulkanPhysicalDevice> m_PhysicalDevice;
 	std::shared_ptr<VulkanDevice> m_Device;
 
-	
+	// Surface
+	// TODO: move surface to separated class
+	VkSurfaceKHR m_Surface;
+	void CreateSurface();
+	int32_t m_PresentQueueIndex = -1;
 };

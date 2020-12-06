@@ -18,15 +18,15 @@ public:
 	VulkanPhysicalDevice();
 	~VulkanPhysicalDevice() = default;
 
-	bool IsExtensionSupported(const char* extensionName) const;
-	QueueFamilyIndices GetQueueFamilyIndices(int flags);
+	bool IsExtensionSupported(const std::string& extensionName) const;
 	VkPhysicalDevice GetVulkanPhysicalDevice() const { return m_PhysicalDevice; }
-
+	const QueueFamilyIndices& GetQueueFamilyIndices() const { return m_QueueFamilyIndices; }
 
 	static std::shared_ptr<VulkanPhysicalDevice> Select();
 
 private:
 	QueueFamilyIndices m_QueueFamilyIndices;
+	QueueFamilyIndices GetQueueFamilyIndices(int flags);
 
 	VkPhysicalDevice m_PhysicalDevice;
 	VkPhysicalDeviceProperties m_Properties;
@@ -46,8 +46,13 @@ public:
 	~VulkanDevice() = default;
 
 	VkDevice GetVulkanDevice() const { return m_LogicalDevice; }
+	VkQueue GetQueue() { return m_Queue; }
+
+
+	void Cleanup();
 private:
 	VkDevice m_LogicalDevice = nullptr;
 	std::shared_ptr<VulkanPhysicalDevice> m_PhysicalDevice;
 	VkPhysicalDeviceFeatures m_EnabledFeatures;
+	VkQueue m_Queue;
 };

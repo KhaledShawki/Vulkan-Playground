@@ -11,19 +11,23 @@
     <ClInclude Include="Vulkan Playground\src\Renderer\Vulkan.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanDevice.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="Vulkan Playground\src\Renderer\VulkanRenderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Vulkan Playground\src\Window.h" />
-    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanDevice.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vulkan Playground\src\Log.cpp" />
+    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanDevice.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="Vulkan Playground\src\Renderer\VulkanRenderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Vulkan Playground\src\Window.cpp" />
     <ClCompile Include="Vulkan Playground\src\main.cpp" />
-    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanDevice.cpp" />
   </ItemGroup>
 </Project>
