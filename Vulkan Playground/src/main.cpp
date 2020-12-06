@@ -17,11 +17,6 @@ int main()
 
 	vkRenderer.Init();
 	
-	uint32_t extensionCount = 0;
-	 //vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-
-	INFO("Extension count: {0}", extensionCount);
-
 	while (!window->ShouldClose())
 	{
 		window->OnUpdate();

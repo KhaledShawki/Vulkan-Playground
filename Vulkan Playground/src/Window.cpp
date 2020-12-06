@@ -30,6 +30,6 @@ void Window::OnUpdate()
 void Window::Shutdown()
 {
 	glfwDestroyWindow(m_Window);
-	INFO("Terminating GLFW");
+	CORE_INFO("Terminating GLFW");
 	glfwTerminate();
 }

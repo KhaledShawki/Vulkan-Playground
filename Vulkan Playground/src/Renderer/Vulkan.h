@@ -7,7 +7,7 @@
 	VkResult res = (f);												             \
 	if (res != VK_SUCCESS)											             \
 	{																             \
-		ERROR("VkResult is '{0}' in {1}:{2}", res, __FILE__ , __LINE__); \
+		CORE_ERROR("VkResult is '{0}' in {1}:{2}", res, __FILE__ , __LINE__); \
 		ASSERT(res == VK_SUCCESS);										 \
 	}																			 \
 }
