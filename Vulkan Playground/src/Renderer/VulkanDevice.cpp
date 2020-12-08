@@ -197,7 +197,7 @@ VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physical
 	{
 		const float defaultQueuePriority(0.0f);
 
-		int32_t presentQueueIndex = VulkanContext::GetVulkanContext()->GetVulkanSwapChain()->GetPresentQueueIndex();
+		int32_t presentQueueIndex = VulkanContext::GetVulkanContext()->GetVulkanSwapchain()->GetPresentQueueIndex();
 		if (presentQueueIndex != m_PhysicalDevice->m_QueueFamilyIndices.Graphic && presentQueueIndex != m_PhysicalDevice->m_QueueFamilyIndices.Compute && presentQueueIndex != m_PhysicalDevice->m_QueueFamilyIndices.Transfer)
 		{
 			VkDeviceQueueCreateInfo createInfo{};
@@ -229,6 +229,6 @@ VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physical
 
 void VulkanDevice::Cleanup()
 {
-	CORE_INFO("Destroying the logical device.");
+	CORE_INFO("Destroying vulkan logical device.");
 	vkDestroyDevice(m_LogicalDevice, nullptr);
 }

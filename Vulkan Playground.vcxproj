@@ -58,7 +58,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLFW_INCLUDE_VULKAN;PLATFORM_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_VULKAN;GLM_FORCE_RADIANS;GLM_FORCE_DEPTH_ZERO_TO_ONE;PLATFORM_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Vulkan Playground\src;Vulkan Playground\lib\spdlog\include;Vulkan Playground\lib\GLFW\include;Vulkan Playground\lib\glm;Vulkan Playground\lib\Vulkan\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -75,7 +75,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>GLFW_INCLUDE_VULKAN;PLATFORM_WINDOWS;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_VULKAN;GLM_FORCE_RADIANS;GLM_FORCE_DEPTH_ZERO_TO_ONE;PLATFORM_WINDOWS;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Vulkan Playground\src;Vulkan Playground\lib\spdlog\include;Vulkan Playground\lib\GLFW\include;Vulkan Playground\lib\glm;Vulkan Playground\lib\Vulkan\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -95,17 +95,17 @@
   <ItemGroup>
     <ClInclude Include="Vulkan Playground\src\Core.h" />
     <ClInclude Include="Vulkan Playground\src\Log.h" />
-    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanSwapChain.h" />
     <ClInclude Include="Vulkan Playground\src\Renderer\Vulkan.h" />
-    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanDevice.h" />
     <ClInclude Include="Vulkan Playground\src\Renderer\VulkanContext.h" />
+    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanDevice.h" />
+    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanSwapchain.h" />
     <ClInclude Include="Vulkan Playground\src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vulkan Playground\src\Log.cpp" />
-    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanSwapChain.cpp" />
-    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanDevice.cpp" />
     <ClCompile Include="Vulkan Playground\src\Renderer\VulkanContext.cpp" />
+    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanDevice.cpp" />
+    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanSwapchain.cpp" />
     <ClCompile Include="Vulkan Playground\src\Window.cpp" />
     <ClCompile Include="Vulkan Playground\src\main.cpp" />
   </ItemGroup>

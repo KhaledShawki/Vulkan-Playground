@@ -5,31 +5,44 @@
 #include "GLFW/glfw3.h"
 #include "VulkanDevice.h"
 
-class VulkanSwapChain
+#include <algorithm>
+
+class VulkanSwapchain
 {
 public:
-	struct SwapChainSupportDetails {
-		VkSurfaceCapabilitiesKHR Capabilities;
-		std::vector<VkSurfaceFormatKHR> Formats;
-		std::vector<VkPresentModeKHR> PresentModes;
-	};
-
-public:
-	VulkanSwapChain() = default;
-	~VulkanSwapChain() = default;
+	VulkanSwapchain() = default;
+	~VulkanSwapchain() = default;
 
 	void Init(VkInstance vulkanInstance, std::shared_ptr<VulkanPhysicalDevice>& physicalDevice);
 	void InitSurface(GLFWwindow* window);
-	void CreateSwapChain();
+	void CreateSwapchain(bool vsync);
+	void Cleanup();
 
 	inline int32_t GetPresentQueueIndex() { return m_PresentQueueIndex; }
-	inline SwapChainSupportDetails GetSwapChainDetails() { return m_SwapChainSupportDetails; }
+
+private:
+	struct SwapchainImage {
+		VkImage image;
+		VkImageView imageView;
+	};
+
 private:
 	VkInstance m_Instance;
 	std::shared_ptr<VulkanPhysicalDevice> m_PhysicalDevice;
+	VkDevice  m_Device; 
 	VkSurfaceKHR m_Surface;
 	int32_t m_PresentQueueIndex = -1;
+	
+	VkQueue m_PresentQueue;
+	VkSurfaceFormatKHR m_Format{};
+	
+	uint32_t m_Width;
+	uint32_t m_Height;
 
-	SwapChainSupportDetails m_SwapChainSupportDetails;
+	VkSwapchainKHR m_Swapchain;
+
+	uint32_t m_ImageCount;
+	
+	std::vector< SwapchainImage> m_SwapchainImages;
 
 };

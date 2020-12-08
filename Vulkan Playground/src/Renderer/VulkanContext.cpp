@@ -12,22 +12,24 @@ void VulkanContext::Init()
 	CreateInstance();
 	m_PhysicalDevice = VulkanPhysicalDevice::Select();
 	
-	m_VulkanSwapChain = std::make_shared<VulkanSwapChain>();
-	m_VulkanSwapChain->Init(s_VulkanInstance, m_PhysicalDevice);
+	m_VulkanSwapchain = std::make_shared<VulkanSwapchain>();
+	m_VulkanSwapchain->Init(s_VulkanInstance, m_PhysicalDevice);
 	// We need to initialize the surface before we create the logical device
 	// because we need to pass the present queue index to DeviceQueueCreateInfo
-	m_VulkanSwapChain->InitSurface(m_Window);
+	m_VulkanSwapchain->InitSurface(m_Window);
 
 	VkPhysicalDeviceFeatures enabledFeatures{};
 	m_Device = std::make_shared<VulkanDevice>(m_PhysicalDevice, enabledFeatures);
 
-	m_VulkanSwapChain->CreateSwapChain();
+	m_VulkanSwapchain->CreateSwapchain(true);
 
 } 
 
 void VulkanContext::Cleanup()
 {
+	m_VulkanSwapchain->Cleanup();
 	m_Device->Cleanup();
+	CORE_INFO("Destroying vulkan instance."); 
 	vkDestroyInstance(s_VulkanInstance, nullptr);
 }
 

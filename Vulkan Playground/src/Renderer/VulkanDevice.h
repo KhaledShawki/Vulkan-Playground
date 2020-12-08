@@ -49,7 +49,6 @@ public:
 	VkDevice GetVulkanDevice() const { return m_LogicalDevice; }
 	VkQueue GetQueue() { return m_Queue; }
 
-
 	void Cleanup();
 private:
 	VkDevice m_LogicalDevice = nullptr;
