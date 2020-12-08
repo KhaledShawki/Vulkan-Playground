@@ -45,6 +45,7 @@ public:
 	VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physicalDevice, VkPhysicalDeviceFeatures enabledFeatures);
 	~VulkanDevice() = default;
 
+	const std::shared_ptr<VulkanPhysicalDevice>& GetPhysicalDevice() const { return m_PhysicalDevice; }
 	VkDevice GetVulkanDevice() const { return m_LogicalDevice; }
 	VkQueue GetQueue() { return m_Queue; }
 

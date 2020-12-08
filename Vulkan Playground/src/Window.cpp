@@ -4,7 +4,7 @@
 Window::Window(std::string title, const unsigned int width, const unsigned int height)
 {
 
-	// Initialise GLFW
+	// Initialize GLFW
 	glfwInit();
 
 	// Set GLFW to not work with OpenGL
@@ -16,6 +16,15 @@ Window::Window(std::string title, const unsigned int width, const unsigned int h
 }
 
 
+
+std::shared_ptr<Window> Window::GetWindow()
+{
+	if (!s_Window)
+	{
+		s_Window = std::make_shared<Window>("Vulkan Playground", 1200, 720);
+	}
+	return s_Window;
+}
 
 bool Window::ShouldClose()
 {

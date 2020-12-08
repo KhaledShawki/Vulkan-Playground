@@ -4,26 +4,26 @@
 #include "Window.h"
 #include "Log.h"
 
-#include "Renderer/VulkanRenderer.h"
+#include "Renderer/VulkanContext.h"
 
 
 int main()
 {
-	// Initialise Logger
+	// Initialize Logger
 	Log::Init();
 	
-	Window* window = new Window("Vulkan test", 1200, 720);
-	VulkanRenderer vkRenderer((GLFWwindow*)window->GetNativeWindow());
+	std::shared_ptr<Window> window = Window::GetWindow();
+	std::shared_ptr<VulkanContext> vulkanContext = VulkanContext::GetVulkanContext();
+	
 
-	vkRenderer.Init();
+	vulkanContext->Init();
 	
 	while (!window->ShouldClose())
 	{
 		window->OnUpdate();
 	}
-	vkRenderer.Cleanup();
+	vulkanContext->Cleanup();
 	window->Shutdown();
 
-	delete window;
 	return 0;
 }

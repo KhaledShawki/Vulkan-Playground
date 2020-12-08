@@ -95,15 +95,17 @@
   <ItemGroup>
     <ClInclude Include="Vulkan Playground\src\Core.h" />
     <ClInclude Include="Vulkan Playground\src\Log.h" />
+    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanSwapChain.h" />
     <ClInclude Include="Vulkan Playground\src\Renderer\Vulkan.h" />
     <ClInclude Include="Vulkan Playground\src\Renderer\VulkanDevice.h" />
-    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanRenderer.h" />
+    <ClInclude Include="Vulkan Playground\src\Renderer\VulkanContext.h" />
     <ClInclude Include="Vulkan Playground\src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vulkan Playground\src\Log.cpp" />
+    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanSwapChain.cpp" />
     <ClCompile Include="Vulkan Playground\src\Renderer\VulkanDevice.cpp" />
-    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanRenderer.cpp" />
+    <ClCompile Include="Vulkan Playground\src\Renderer\VulkanContext.cpp" />
     <ClCompile Include="Vulkan Playground\src\Window.cpp" />
     <ClCompile Include="Vulkan Playground\src\main.cpp" />
   </ItemGroup>

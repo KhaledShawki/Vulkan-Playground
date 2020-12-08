@@ -5,23 +5,29 @@
 
 #include "Vulkan.h"
 #include "VulkanDevice.h"
+#include "VulkanSwapChain.h"
+
 
 #include "Log.h"
 
 
-class VulkanRenderer {
+class VulkanContext {
 
 public:
-	VulkanRenderer(GLFWwindow* nativeWindow);
-	~VulkanRenderer() = default;
+	VulkanContext(GLFWwindow* nativeWindow);
+	~VulkanContext() = default;
 	void Init();
 	void Cleanup();
 	
+	static std::shared_ptr<VulkanContext> GetVulkanContext();
+
 	inline static VkInstance GetInstance() { return s_VulkanInstance; }
-	std::shared_ptr<VulkanDevice> GetDevice() { return m_Device; }
+	std::shared_ptr<VulkanDevice> GetDevice() const { return m_Device; }
+	std::shared_ptr<VulkanSwapChain> GetVulkanSwapChain() const { return m_VulkanSwapChain; }
 private:
 	GLFWwindow* m_Window;
 	
+	inline static std::shared_ptr<VulkanContext> s_VulkanContext;
 	// Vulkan instance
 	inline static VkInstance s_VulkanInstance;
 	void CreateInstance();
@@ -32,9 +38,6 @@ private:
 	std::shared_ptr<VulkanPhysicalDevice> m_PhysicalDevice;
 	std::shared_ptr<VulkanDevice> m_Device;
 
-	// Surface
-	// TODO: move surface to separated class
-	VkSurfaceKHR m_Surface;
-	void CreateSurface();
-	int32_t m_PresentQueueIndex = -1;
+	// Surface and SwapChain
+	std::shared_ptr<VulkanSwapChain> m_VulkanSwapChain;
 };

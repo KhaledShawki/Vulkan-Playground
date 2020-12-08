@@ -1,12 +1,12 @@
 #include "VulkanDevice.h"
-#include "VulkanRenderer.h"
+#include "VulkanContext.h"
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Vulkan Physical Device
 ////////////////////////////////////////////////////////////////////////////////////
 VulkanPhysicalDevice::VulkanPhysicalDevice()
 {
-	auto vkInstance = VulkanRenderer::GetInstance();
+	auto vkInstance = VulkanContext::GetInstance();
 
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(vkInstance, &deviceCount, nullptr);
@@ -90,11 +90,26 @@ VulkanPhysicalDevice::VulkanPhysicalDevice()
 		}
 	}
 
+	uint32_t extensionCount = 0;
+	vkEnumerateDeviceExtensionProperties(m_PhysicalDevice, nullptr, &extensionCount, nullptr);
+	if (extensionCount > 0)
+	{
+		std::vector<VkExtensionProperties> deviceExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(m_PhysicalDevice, nullptr, &extensionCount, deviceExtensions.data());
+
+		CORE_TRACE("Supported extensions :");
+		for (auto& ext : deviceExtensions)
+		{
+			m_SupportedExtensions.emplace(ext.extensionName);
+			CORE_TRACE("\t{0}", ext.extensionName);
+		}
+	}
+
 }
 
-bool VulkanPhysicalDevice::IsExtensionSupported(const char* extensionName) const
+bool VulkanPhysicalDevice::IsExtensionSupported(const std::string& extensionName) const
 {
-    return false;
+    return m_SupportedExtensions.find(extensionName) != m_SupportedExtensions.end();
 }
 
 VulkanPhysicalDevice::QueueFamilyIndices VulkanPhysicalDevice::GetQueueFamilyIndices(int flags)
@@ -159,17 +174,15 @@ VulkanPhysicalDevice::QueueFamilyIndices VulkanPhysicalDevice::GetQueueFamilyInd
 		}
 	}
 
+	CORE_INFO("Graphic Queu index: {0}", indices.Graphic);
+	CORE_INFO("Compute Queu index: {0}", indices.Compute);
+	CORE_INFO("Transfer Queu index: {0}", indices.Transfer);
 	return indices;
 }
 
 std::shared_ptr<VulkanPhysicalDevice> VulkanPhysicalDevice::Select()
 {
     return std::make_shared<VulkanPhysicalDevice>();
-}
-
-bool VulkanPhysicalDevice::IsExtensionSupported(const std::string& extensionName) const
-{
-	return m_SupportedExtensions.find(extensionName) != m_SupportedExtensions.end();
 }
 
 
@@ -179,13 +192,32 @@ bool VulkanPhysicalDevice::IsExtensionSupported(const std::string& extensionName
 VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physicalDevice, VkPhysicalDeviceFeatures enabledFeatures)
 	:m_PhysicalDevice(physicalDevice), m_EnabledFeatures(enabledFeatures)
 {
+	// Present queue
+	// Add the present queue index if it does not have the same index as the graphics, transfer or compute queue index
+	{
+		const float defaultQueuePriority(0.0f);
+
+		int32_t presentQueueIndex = VulkanContext::GetVulkanContext()->GetVulkanSwapChain()->GetPresentQueueIndex();
+		if (presentQueueIndex != m_PhysicalDevice->m_QueueFamilyIndices.Graphic && presentQueueIndex != m_PhysicalDevice->m_QueueFamilyIndices.Compute && presentQueueIndex != m_PhysicalDevice->m_QueueFamilyIndices.Transfer)
+		{
+			VkDeviceQueueCreateInfo createInfo{};
+			createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			createInfo.queueFamilyIndex = presentQueueIndex;
+			createInfo.queueCount = 1;
+			createInfo.pQueuePriorities = &defaultQueuePriority;
+			m_PhysicalDevice->m_QueueCreateInfos.push_back(createInfo);
+		}
+	}
+	const std::vector<char*> deviceExtensions = {
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
 
 	VkDeviceCreateInfo deviceCreateInfo{};
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(m_PhysicalDevice->m_QueueCreateInfos.size());
 	deviceCreateInfo.pQueueCreateInfos = m_PhysicalDevice->m_QueueCreateInfos.data();
-	deviceCreateInfo.enabledExtensionCount = 0;
-	deviceCreateInfo.ppEnabledExtensionNames = nullptr;
+	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+	deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
 	deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
 
 	VK_CHECK_RESULT(vkCreateDevice(m_PhysicalDevice->GetVulkanPhysicalDevice(), &deviceCreateInfo, nullptr, &m_LogicalDevice));
@@ -197,5 +229,6 @@ VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanPhysicalDevice>& physical
 
 void VulkanDevice::Cleanup()
 {
+	CORE_INFO("Destroying the logical device.");
 	vkDestroyDevice(m_LogicalDevice, nullptr);
 }

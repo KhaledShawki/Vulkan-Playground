@@ -31,7 +31,9 @@ workspace  "Vulkan Playground"
         defines
 		{
             "PLATFORM_WINDOWS",
-            "GLFW_INCLUDE_VULKAN"
+            "GLFW_INCLUDE_VULKAN",
+            "GLM_FORCE_RADIANS",
+            "GLM_FORCE_DEPTH_ZERO_TO_ONE"
         }
         
         includedirs

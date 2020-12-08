@@ -1,31 +1,49 @@
-#include "VulkanRenderer.h"
+#include "VulkanContext.h"
+#include "Window.h"
 
-
-VulkanRenderer::VulkanRenderer(GLFWwindow* nativeWindow)
+VulkanContext::VulkanContext(GLFWwindow* nativeWindow)
 {
 	m_Window = nativeWindow;
 }
 
-void VulkanRenderer::Init()
+void VulkanContext::Init()
 {
 	
 	CreateInstance();
-
 	m_PhysicalDevice = VulkanPhysicalDevice::Select();
+	
+	m_VulkanSwapChain = std::make_shared<VulkanSwapChain>();
+	m_VulkanSwapChain->Init(s_VulkanInstance, m_PhysicalDevice);
+	// We need to initialize the surface before we create the logical device
+	// because we need to pass the present queue index to DeviceQueueCreateInfo
+	m_VulkanSwapChain->InitSurface(m_Window);
+
 	VkPhysicalDeviceFeatures enabledFeatures{};
 	m_Device = std::make_shared<VulkanDevice>(m_PhysicalDevice, enabledFeatures);
-	
-	CreateSurface();
+
+	m_VulkanSwapChain->CreateSwapChain();
+
 } 
 
-void VulkanRenderer::Cleanup()
+void VulkanContext::Cleanup()
 {
-	vkDestroySurfaceKHR(s_VulkanInstance, m_Surface, nullptr);
 	m_Device->Cleanup();
 	vkDestroyInstance(s_VulkanInstance, nullptr);
 }
 
-void VulkanRenderer::CreateInstance()
+
+
+std::shared_ptr<VulkanContext> VulkanContext::GetVulkanContext()
+{
+	if (!s_VulkanContext)
+	{
+		s_VulkanContext = std::make_shared<VulkanContext>((GLFWwindow*)Window::GetWindow()->GetNativeWindow());
+	}
+
+	return s_VulkanContext;
+}
+
+void VulkanContext::CreateInstance()
 {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Application Info
@@ -77,7 +95,7 @@ void VulkanRenderer::CreateInstance()
 
 }
 
-bool VulkanRenderer::CheckInstanceExtensionSupport(std::vector<const char*>* extensionsToCheck)
+bool VulkanContext::CheckInstanceExtensionSupport(std::vector<const char*>* extensionsToCheck)
 {
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -104,36 +122,6 @@ bool VulkanRenderer::CheckInstanceExtensionSupport(std::vector<const char*>* ext
 	return true;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Surface Creation
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void VulkanRenderer::CreateSurface()
-{
-	VK_CHECK_RESULT(glfwCreateWindowSurface(s_VulkanInstance, m_Window, nullptr, &m_Surface));
-	// Get available queue family properties
-	uint32_t queueCount;
-	vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice->GetVulkanPhysicalDevice(), &queueCount, nullptr);
-	ASSERT(queueCount >= 1);
-
-	std::vector<VkQueueFamilyProperties> queueProps(queueCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice->GetVulkanPhysicalDevice(), &queueCount, queueProps.data());
-
-	// Search for a graphics and a present queue in the array of queue families, 
-	// try to find one that supports both
-	for (uint32_t i = 0; i < queueCount; i++)
-	{
-		VkBool32 presentSupport = VK_FALSE;
-		vkGetPhysicalDeviceSurfaceSupportKHR(m_PhysicalDevice->GetVulkanPhysicalDevice(), i, m_Surface, &presentSupport);
-		if (presentSupport == VK_TRUE)
-		{
-			m_PresentQueueIndex = i;
-			if ((queueProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)
-			{
-				break;
-			}
-		}
-	}
-}
 
 
 
