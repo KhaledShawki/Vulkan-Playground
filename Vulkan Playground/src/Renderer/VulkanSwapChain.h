@@ -42,7 +42,8 @@ private:
 	VkSwapchainKHR m_Swapchain;
 
 	uint32_t m_ImageCount;
-	
+
+	std::vector<VkImage> m_Images;
 	std::vector< SwapchainImage> m_SwapchainImages;
 
 };

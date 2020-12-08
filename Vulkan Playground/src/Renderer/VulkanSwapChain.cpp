@@ -168,13 +168,50 @@ void VulkanSwapchain::CreateSwapchain(bool vsync)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	if (oldSwapchain != VK_NULL_HANDLE)
 	{
+		for (size_t i = 0; i < m_ImageCount; i++)
+		{
+			vkDestroyImageView(m_Device, m_SwapchainImages[i].imageView, nullptr);
+		}
 		vkDestroySwapchainKHR(m_Device, oldSwapchain, nullptr);
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Images and ImageViews creation
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	vkGetSwapchainImagesKHR(m_Device, m_Swapchain, &m_ImageCount, nullptr);
+	m_Images.resize(m_ImageCount);
+	vkGetSwapchainImagesKHR(m_Device, m_Swapchain, &m_ImageCount, m_Images.data());
+
+	m_SwapchainImages.resize(m_ImageCount);
+	for (size_t i = 0; i < m_ImageCount; i++)
+	{
+		VkImageViewCreateInfo imageViewCreateInfo{};
+		imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		imageViewCreateInfo.format = m_Format.format;
+		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+		imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+		imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+		imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+		imageViewCreateInfo.subresourceRange.levelCount = 1;
+		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+		imageViewCreateInfo.subresourceRange.layerCount = 1;
+		imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		imageViewCreateInfo.image = m_Images[i];
+
+		m_SwapchainImages[i].image = m_Images[i];
+		VK_CHECK_RESULT(vkCreateImageView(m_Device, &imageViewCreateInfo, nullptr, &m_SwapchainImages[i].imageView));
 	}
 }
 
 void VulkanSwapchain::Cleanup()
 {
-
+	CORE_INFO("Destroying swapchain image views.");
+	for (size_t i = 0; i < m_ImageCount; i++)
+	{
+		vkDestroyImageView(m_Device, m_SwapchainImages[i].imageView, nullptr);
+	}
 	CORE_INFO("Destroying vulkan swapchain.");
 	vkDestroySwapchainKHR(m_Device, m_Swapchain, nullptr);
 }
