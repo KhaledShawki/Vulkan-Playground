@@ -1,19 +1,19 @@
-workspace  "Vulkan Playground"
+workspace  "Vulkan-Playground"
     architecture "x64"
-    startproject "Vulkan Playground"
+    startproject "Vulkan-Playground"
     configurations { "Debug", "Release" }
 
     outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 	-- Include directories relative to root folder (soulution directory)
     IncludeDir ={}
-    IncludeDir["spdlog"] = "Vulkan Playground/lib/spdlog/include"
-    IncludeDir["GLFW"] = "Vulkan Playground/lib/GLFW/include"
-    IncludeDir["glm"] = "Vulkan Playground/lib/glm"
-    IncludeDir["vulkan"] = "Vulkan Playground/lib/Vulkan/Include"
+    IncludeDir["spdlog"] = "Vulkan-Playground/lib/spdlog/include"
+    IncludeDir["GLFW"] = "Vulkan-Playground/lib/GLFW/include"
+    IncludeDir["glm"] = "Vulkan-Playground/lib/glm"
+    IncludeDir["vulkan"] = "Vulkan-Playground/lib/Vulkan/Include"
 
-    include "Vulkan Playground/lib/GLFW"
-    project "Vulkan Playground"
+    include "Vulkan-Playground/lib/GLFW"
+    project "Vulkan-Playground"
         kind "ConsoleApp"
         language "C++"
         cppdialect "C++17"
@@ -47,7 +47,7 @@ workspace  "Vulkan Playground"
 
         links{
 			"GLFW",
-			"Vulkan Playground/lib/Vulkan/Lib/vulkan-1.lib"
+			"Vulkan-Playground/lib/Vulkan/Lib/vulkan-1.lib"
         }
 
         filter "system:windows"
